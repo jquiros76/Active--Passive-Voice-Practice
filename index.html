@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Active vs Passive Voice</title>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f7ff;--surface:#eaefff;--card:#fff;
+  --border:#d8e0ff;--border2:#b8c5ff;
+  --ink:#0d1333;--ink2:#3d4f80;--muted:#8a96c0;
+  --act:#1d4ed8;--act-l:rgba(29,78,216,.11);--act-b:rgba(29,78,216,.28);
+  --pas:#be185d;--pas-l:rgba(190,24,93,.11);--pas-b:rgba(190,24,93,.28);
+  --green:#15803d;--gbg:rgba(21,128,61,.09);
+  --red:#b91c1c;--rbg:rgba(185,28,28,.08);
+  --gold:#b45309;--amber-l:rgba(180,83,9,.1);
+  --purple:#7c3aed;--pur-l:rgba(124,58,237,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',sans-serif;min-height:100vh}
+
+/* HEADER */
+.hdr{
+background:linear-gradient(135deg,#1e1b4b 0%,#1d4ed8 45%,#be185d 100%);
+padding:18px 22px;display:flex;align-items:center;gap:14px;
+}
+.hdr-icon{width:50px;height:50px;border-radius:14px;flex-shrink:0;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+.hdr-text h1{font-size:1.2rem;font-weight:800;color:#fff;letter-spacing:-.02em}
+.hdr-text p{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:2px}
+.hdr-pts{margin-left:auto;text-align:right}
+.hdr-pts-num{font-family:‘DM Mono’,monospace;font-size:2rem;font-weight:500;color:#fde68a;line-height:1}
+.hdr-pts-lbl{font-size:.6rem;color:rgba(255,255,255,.35)}
+
+/* BIG TABS */
+.bigtabs{display:flex;background:#1e1b4b}
+.bt{flex:1;padding:13px 6px;text-align:center;cursor:pointer;transition:all .2s;border-bottom:4px solid transparent;background:none;border-top:none;border-left:none;border-right:none;font-family:‘Familjen Grotesk’,sans-serif}
+.bt:hover{background:rgba(255,255,255,.05)}
+.bt-word{font-size:.82rem;font-weight:800;color:rgba(255,255,255,.4);letter-spacing:.02em;text-transform:uppercase}
+.bt-sub{font-size:.58rem;color:rgba(255,255,255,.25);margin-top:3px;text-transform:uppercase;letter-spacing:.05em}
+.bt.ba{background:var(–act-l);border-bottom-color:var(–act)} .bt.ba .bt-word{color:#93c5fd}
+.bt.bp{background:var(–pas-l);border-bottom-color:var(–pas)} .bt.bp .bt-word{color:#fbcfe8}
+.bt.bx{background:rgba(124,58,237,.1);border-bottom-color:var(–purple)} .bt.bx .bt-word{color:#c4b5fd}
+.bt.bm{background:rgba(255,255,255,.07);border-bottom-color:#fff} .bt.bm .bt-word{color:#fff}
+
+/* SUB TABS */
+.stabs{background:var(–surface);border-bottom:1px solid var(–border);display:flex;overflow-x:auto;scrollbar-width:none;padding:0 14px}
+.stabs::-webkit-scrollbar{display:none}
+.st{padding:9px 16px;cursor:pointer;white-space:nowrap;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(–muted);border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:all .18s;background:none;border-top:none;border-left:none;border-right:none;font-family:‘Familjen Grotesk’,sans-serif}
+.st.sa{color:var(–act);border-bottom-color:var(–act)}
+.st.sp{color:var(–pas);border-bottom-color:var(–pas)}
+.st.sx{color:var(–purple);border-bottom-color:var(–purple)}
+.st.sm{color:#6d28d9;border-bottom-color:#6d28d9}
+
+/* PROGRESS */
+.prog{height:3px;background:var(–border)}
+.pf{height:100%;transition:width .4s ease}
+
+/* WRAP */
+.wrap{max-width:740px;margin:0 auto;padding:20px 13px 80px}
+
+/* CONCEPT CARD */
+.concept{background:var(–card);border:1.5px solid var(–border);border-radius:16px;padding:18px 20px;margin-bottom:18px}
+.concept-title{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(–muted);margin-bottom:12px}
+.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:500px){.concept-grid{grid-template-columns:1fr}}
+.cbox{border-radius:11px;padding:12px 14px;border:1.5px solid}
+.cbox-act{background:var(–act-l);border-color:var(–act-b)}
+.cbox-pas{background:var(–pas-l);border-color:var(–pas-b)}
+.cbox-label{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.cbox-act .cbox-label{color:var(–act)}
+.cbox-pas .cbox-label{color:var(–pas)}
+.cbox-formula{font-family:‘DM Mono’,monospace;font-size:.78rem;padding:5px 9px;border-radius:6px;background:rgba(255,255,255,.6);display:inline-block;margin-bottom:7px;color:var(–ink)}
+.cbox-ex{font-size:.73rem;color:var(–ink2);line-height:1.6}
+.cbox-ex span{display:block}
+
+/* TENSE TABLE */
+.tense-table{background:var(–card);border:1.5px solid var(–border);border-radius:14px;overflow:hidden;margin-bottom:18px}
+.tense-table table{width:100%;border-collapse:collapse;font-size:.78rem}
+.tense-table th{padding:9px 12px;background:var(–surface);font-weight:800;font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:var(–muted);border-bottom:1px solid var(–border);text-align:left}
+.tense-table td{padding:8px 12px;border-bottom:1px solid var(–border);vertical-align:top;line-height:1.5}
+.tense-table tr:last-child td{border-bottom:none}
+.tense-table .t-name{font-weight:700;color:var(–ink);white-space:nowrap}
+.tense-table .t-act{color:var(–act);font-family:‘DM Mono’,monospace;font-size:.75rem}
+.tense-table .t-pas{color:var(–pas);font-family:‘DM Mono’,monospace;font-size:.75rem}
+
+/* STATS */
+.stats{display:flex;gap:8px;margin-bottom:16px}
+.stat{flex:1;background:var(–card);border:1.5px solid var(–border);border-radius:11px;padding:9px 10px;text-align:center}
+.sv{font-family:‘DM Mono’,monospace;font-size:1.3rem;font-weight:500;line-height:1}
+.sl{font-size:.6rem;color:var(–muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+
+/* QUESTION CARD */
+.qcard{background:var(–card);border:2px solid var(–border);border-radius:15px;overflow:hidden;margin-bottom:12px;transition:border-color .22s,box-shadow .22s}
+.qcard.ok  {border-color:var(–green);box-shadow:0 2px 10px rgba(21,128,61,.1)}
+.qcard.fail{border-color:var(–red);box-shadow:0 2px 10px rgba(185,28,28,.09)}
+.qcard-top{padding:14px 17px 11px;border-bottom:1px solid var(–border)}
+.qmeta{display:flex;align-items:center;gap:7px;margin-bottom:8px;flex-wrap:wrap}
+.qnum{width:27px;height:27px;border-radius:7px;flex-shrink:0;background:var(–surface);border:1.5px solid var(–border2);display:flex;align-items:center;justify-content:center;font-family:‘DM Mono’,monospace;font-size:.7rem;color:var(–ink2);font-weight:500}
+.qcard.ok  .qnum{background:var(–green);color:#fff;border-color:var(–green)}
+.qcard.fail .qnum{background:var(–red);color:#fff;border-color:var(–red)}
+.qtag{font-size:.6rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:20px}
+.tg-act{background:var(–act-l);color:var(–act)}
+.tg-pas{background:var(–pas-l);color:var(–pas)}
+.tg-id {background:rgba(20,184,166,.12);color:#0d9488}
+.tg-tr {background:var(–pur-l);color:var(–purple)}
+.tg-err{background:var(–amber-l);color:var(–gold)}
+.tg-by {background:rgba(124,58,237,.1);color:var(–purple)}
+.qlbl{font-size:.62rem;color:var(–muted);margin-left:auto;font-family:‘DM Mono’,monospace}
+.qinstr{font-size:.76rem;color:var(–ink2);margin-bottom:7px;line-height:1.5}
+.qsent{background:var(–surface);border:1.5px solid var(–border);border-radius:9px;padding:11px 14px;font-size:.93rem;line-height:1.75;color:var(–ink);font-weight:600}
+.qsent .gap{display:inline-block;min-width:90px;border-bottom:2.5px solid var(–muted);text-align:center;color:var(–muted);font-style:italic;font-weight:400;margin:0 3px;font-size:.86rem}
+.qsent .ew{background:rgba(185,28,28,.1);border-bottom:2px solid var(–red);padding:1px 4px;border-radius:4px;color:var(–red);font-weight:700}
+.qsent .act-w{color:var(–act);font-weight:800}
+.qsent .pas-w{color:var(–pas);font-weight:800}
+.sig{display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:.65rem;color:var(–muted);background:rgba(255,255,255,.8);border:1px solid var(–border);border-radius:5px;padding:2px 8px;font-family:‘DM Mono’,monospace}
+
+/* TRANSFORM BOX */
+.transform-box{background:var(–surface);border:1.5px solid var(–border);border-radius:9px;padding:12px 14px;margin-top:8px}
+.tb-label{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(–muted);margin-bottom:6px}
+.tb-sent{font-size:.9rem;font-weight:600;color:var(–ink);font-family:‘DM Mono’,monospace;padding:7px 10px;background:rgba(255,255,255,.7);border-radius:6px;border:1px solid var(–border)}
+
+/* 2 BIG BUTTONS */
+.two-btns{display:flex;gap:10px;padding:12px 15px}
+.voice-btn{flex:1;padding:13px 8px;border-radius:12px;border:2px solid var(–border);font-family:‘Familjen Grotesk’,sans-serif;font-size:.95rem;font-weight:800;cursor:pointer;transition:all .15s;background:var(–surface);color:var(–ink);text-align:center}
+.voice-btn:hover:not(.dis){transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.voice-btn.act-h:hover:not(.dis){border-color:var(–act);background:var(–act-l);color:var(–act)}
+.voice-btn.pas-h:hover:not(.dis){border-color:var(–pas);background:var(–pas-l);color:var(–pas)}
+.voice-btn.ok {border-color:var(–green);background:var(–gbg);color:var(–green)}
+.voice-btn.bad{border-color:var(–red);background:var(–rbg);color:var(–red)}
+.voice-btn.dis{cursor:default;opacity:.7}
+.vb-sub{font-size:.62rem;display:block;margin-top:3px;font-weight:600;opacity:.65}
+
+/* OPTIONS */
+.opts{display:flex;flex-direction:column;gap:7px;padding:12px 15px}
+.opt{display:flex;align-items:center;gap:8px;background:var(–surface);border:2px solid var(–border);border-radius:9px;padding:9px 13px;cursor:pointer;font-size:.86rem;font-weight:600;color:var(–ink);transition:all .14s;user-select:none;line-height:1.45}
+.opt:hover:not(.dis){border-color:var(–act);background:var(–act-l)}
+.opt.ok {border-color:var(–green);background:var(–gbg);color:var(–green);font-weight:800}
+.opt.bad{border-color:var(–red);background:var(–rbg);color:var(–red)}
+.opt.dis{cursor:default}
+.ol{width:24px;height:24px;flex-shrink:0;border-radius:6px;border:2px solid var(–border);background:var(–card);display:flex;align-items:center;justify-content:center;font-family:‘DM Mono’,monospace;font-size:.68rem;font-weight:700}
+.opt.ok  .ol{background:var(–green);color:#fff;border-color:var(–green)}
+.opt.bad .ol{background:var(–red);color:#fff;border-color:var(–red)}
+
+/* WRITE */
+.write-area{padding:12px 15px}
+.wr{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.wi{background:var(–surface);border:2px solid var(–border);border-radius:9px;padding:8px 13px;color:var(–ink);font-family:‘DM Mono’,monospace;font-size:.88rem;font-weight:500;flex:1;min-width:160px;outline:none;transition:border-color .2s}
+.wi:focus{border-color:var(–act)}
+.wi.ok  {border-color:var(–green);background:var(–gbg);color:var(–green)}
+.wi.fail{border-color:var(–red);background:var(–rbg)}
+.wi:disabled{opacity:.85}
+.chk{background:var(–act);color:#fff;border:none;border-radius:9px;padding:8px 18px;font-family:‘Familjen Grotesk’,sans-serif;font-size:.83rem;font-weight:800;cursor:pointer;transition:opacity .2s;white-space:nowrap}
+.chk:hover{opacity:.85}
+.chk:disabled{background:var(–border);color:var(–muted);cursor:default}
+
+/* FEEDBACK */
+.fb{margin:0 15px 13px;padding:11px 13px;border-radius:9px;font-size:.79rem;line-height:1.65;display:none}
+.fb.show{display:block}
+.fb.ok  {background:var(–gbg);border:1px solid rgba(21,128,61,.22);color:#14532d}
+.fb.fail{background:var(–rbg);border:1px solid rgba(185,28,28,.18);color:#7f1d1d}
+.fb .cor{margin-top:7px;padding:7px 11px;background:rgba(21,128,61,.1);border-radius:7px;font-family:‘DM Mono’,monospace;font-size:.8rem;color:#14532d;font-weight:500}
+.fb .rn {margin-top:6px;padding:7px 11px;background:rgba(255,255,255,.7);border:1px solid var(–border);border-radius:7px;font-size:.76rem;color:var(–ink2)}
+.fb .rn strong{color:var(–ink)}
+
+/* COMPLETE */
+.done{background:var(–card);border:2px solid var(–border);border-radius:18px;padding:34px 22px;text-align:center;display:none;margin-bottom:16px}
+.done.show{display:block}
+.done-emoji{font-size:3rem;margin-bottom:10px}
+.done-score{font-family:‘DM Mono’,monospace;font-size:3.3rem;font-weight:500;line-height:1}
+.done-lbl{font-size:.78rem;color:var(–muted);margin-bottom:12px}
+.done-grade{font-size:.95rem;font-weight:800;margin-bottom:14px}
+.done-chips{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
+.dc{padding:6px 13px;border-radius:20px;font-size:.73rem;font-weight:800}
+.dc-ok{background:var(–gbg);color:var(–green)} .dc-fail{background:var(–rbg);color:var(–red)} .dc-pts{background:var(–amber-l);color:var(–gold)}
+.done-btns{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.db{padding:9px 20px;border-radius:9px;border:none;font-family:‘Familjen Grotesk’,sans-serif;font-size:.83rem;font-weight:800;cursor:pointer;transition:all .2s}
+.db-p{background:linear-gradient(135deg,var(–act),var(–pas));color:#fff}.db-p:hover{opacity:.85}
+.db-s{background:var(–surface);border:1.5px solid var(–border);color:var(–ink2)}.db-s:hover{border-color:var(–act);color:var(–act)}
+
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.qcard{animation:up .27s ease both}
+.qcard:nth-child(2){animation-delay:.04s}.qcard:nth-child(3){animation-delay:.08s}
+.qcard:nth-child(4){animation-delay:.12s}.qcard:nth-child(5){animation-delay:.16s}
+.qcard:nth-child(6){animation-delay:.20s}.qcard:nth-child(7){animation-delay:.24s}
+.qcard:nth-child(8){animation-delay:.28s}.qcard:nth-child(9){animation-delay:.32s}
+.qcard:nth-child(10){animation-delay:.36s}.qcard:nth-child(11){animation-delay:.40s}
+</style>
+
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-icon">🔄</div>
+  <div class="hdr-text">
+    <h1>Active vs Passive Voice</h1>
+    <p>Identificar · Transformar · Corregir · Escribir</p>
+  </div>
+  <div class="hdr-pts">
+    <div class="hdr-pts-num" id="g-pts">0</div>
+    <div class="hdr-pts-lbl">puntos</div>
+  </div>
+</div>
+
+<div class="bigtabs" id="bigtabs">
+  <button class="bt ba" id="bt-0" onclick="switchBig(0)"><div class="bt-word">Active</div><div class="bt-sub">Sujeto actúa</div></button>
+  <button class="bt"    id="bt-1" onclick="switchBig(1)"><div class="bt-word">Passive</div><div class="bt-sub">Sujeto recibe</div></button>
+  <button class="bt"    id="bt-2" onclick="switchBig(2)"><div class="bt-word">Transform</div><div class="bt-sub">Active ↔ Passive</div></button>
+  <button class="bt"    id="bt-3" onclick="switchBig(3)"><div class="bt-word">MIX</div><div class="bt-sub">Todo mezclado</div></button>
+</div>
+
+<div class="stabs" id="stabs"></div>
+<div class="prog"><div class="pf" id="pf" style="width:0%"></div></div>
+<div id="sections"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════
+const DATA = [
+
+// ── ACTIVE VOICE ─────────────────────────────────────
+{
+  big:0, id:'act-intro', label:'Active – Identificar', stab:'sa', color:'var(--act)',
+  qs:[
+    {type:'2btn', tag:'tg-id', lbl:'Identificar', qtype:'Reconocer',
+     instr:'Is this sentence Active or Passive?',
+     sent:'<span class="act-w">The chef</span> cooks the meal every day.',
+     sig:'subject performs the action',
+     ans:'active',
+     cor:'✅ <strong>ACTIVE VOICE</strong> — The chef (subject) performs the action.',
+     exp:'<strong>Active Voice</strong>: the subject PERFORMS the action. Formula: Subject + Verb + Object.',
+     rule:'<strong>ACTIVE</strong>: Subject + Verb + Object (The chef COOKS the meal)'},
+    {type:'2btn', tag:'tg-id', lbl:'Identificar', qtype:'Reconocer',
+     instr:'Is this sentence Active or Passive?',
+     sent:'The meal <span class="pas-w">is cooked</span> by the chef every day.',
+     sig:'is/are + past participle',
+     ans:'passive',
+     cor:'✅ <strong>PASSIVE VOICE</strong> — The meal (object) becomes the subject.',
+     exp:'<strong>Passive Voice</strong>: the subject RECEIVES the action. Formula: Subject + be + past participle (+ by agent).',
+     rule:'<strong>PASSIVE</strong>: Subject + be + past participle (The meal IS COOKED)'},
+    {type:'2btn', tag:'tg-id', lbl:'Identificar', qtype:'Reconocer',
+     instr:'Is this sentence Active or Passive?',
+     sent:'Shakespeare <span class="act-w">wrote</span> Hamlet in the early 1600s.',
+     sig:'subject + verb + object',
+     ans:'active',
+     cor:'✅ <strong>ACTIVE VOICE</strong> — Shakespeare (subject) wrote (verb) Hamlet (object).',
+     exp:'Active: Shakespeare is the subject and PERFORMS the action of writing.',
+     rule:'<strong>ACTIVE</strong>: Subject performs the action directly'},
+    {type:'2btn', tag:'tg-id', lbl:'Identificar', qtype:'Reconocer',
+     instr:'Is this sentence Active or Passive?',
+     sent:'Hamlet <span class="pas-w">was written</span> by Shakespeare.',
+     sig:'was/were + past participle',
+     ans:'passive',
+     cor:'✅ <strong>PASSIVE VOICE</strong> — Hamlet (object→subject) was written (passive verb).',
+     exp:'Passive Past Simple: was/were + past participle. The agent (Shakespeare) appears after "by".',
+     rule:'<strong>PASSIVE</strong> Past Simple: was/were + past participle'},
+    {type:'mc', tag:'tg-id', lbl:'Identificar', qtype:'Reconocer',
+     instr:'Which sentence is in the ACTIVE voice?',
+     sent:'Choose the active voice sentence:',
+     sig:'active identification',
+     opts:['The report was finished by Maria.','The window was broken.','Maria finished the report.','The book is being read.'],
+     ans:2,
+     cor:'"<strong>Maria finished the report.</strong>" — Active voice.',
+     exp:'Active: Maria (subject) + finished (verb) + report (object). The others are passive (be + past participle).',
+     rule:'<strong>ACTIVE</strong>: Subject + Verb + Object'},
+    {type:'2btn', tag:'tg-id', lbl:'Identificar', qtype:'Reconocer',
+     instr:'Is this sentence Active or Passive?',
+     sent:'The new bridge <span class="pas-w">is being built</span> by the government.',
+     sig:'is/are being + past participle',
+     ans:'passive',
+     cor:'✅ <strong>PASSIVE VOICE</strong> — Present Continuous Passive: is being built.',
+     exp:'Present Continuous Passive: am/is/are + being + past participle.',
+     rule:'<strong>PASSIVE</strong> Present Continuous: is/are being + past participle'},
+    {type:'mc', tag:'tg-id', lbl:'Identificar', qtype:'Reconocer',
+     instr:'Which sentence is in the PASSIVE voice?',
+     sent:'Choose the passive voice sentence:',
+     sig:'passive identification',
+     opts:['Scientists discovered a new species.','They will announce the results tomorrow.','The results will be announced tomorrow.','She has completed the project.'],
+     ans:2,
+     cor:'"<strong>The results will be announced tomorrow.</strong>" — Passive.',
+     exp:'Future Passive: will be + past participle. "The results" is the receiver, not the performer.',
+     rule:'<strong>PASSIVE</strong> Future: will be + past participle'},
+    {type:'2btn', tag:'tg-id', lbl:'Identificar', qtype:'Reconocer',
+     instr:'Active or Passive?',
+     sent:'This coffee shop <span class="act-w">has served</span> thousands of customers.',
+     sig:'has/have + past participle (active)',
+     ans:'active',
+     cor:'✅ <strong>ACTIVE VOICE</strong> — Present Perfect Active: has served.',
+     exp:'Present Perfect Active: have/has + past participle. The coffee shop (subject) PERFORMS the action.',
+     rule:'<strong>ACTIVE</strong> Present Perfect: have/has + past participle'},
+  ]
+},
+
+// ── PASSIVE FORMATION ────────────────────────────────
+{
+  big:1, id:'pas-present', label:'Passive – Present/Past', stab:'sp', color:'var(--pas)',
+  qs:[
+    {type:'mc', tag:'tg-pas', lbl:'Passive', qtype:'Present Simple',
+     instr:'Choose the correct passive form (Present Simple):',
+     sent:'English _____ all over the world.',
+     sig:'Present Simple Passive',
+     opts:['is spoken','speaks','was spoken','has spoken'],
+     ans:0,
+     cor:'English <strong>is spoken</strong> all over the world.',
+     exp:'Present Simple Passive: <strong>am/is/are + past participle</strong>. "English" is singular → is spoken.',
+     rule:'Present Simple Passive: <strong>is/are + past participle</strong>'},
+    {type:'write', tag:'tg-pas', lbl:'Passive', qtype:'Escribir',
+     instr:'Complete with the correct passive form:',
+     sent:'These cars _____ (make) in Japan.',
+     sig:'Present Simple / plural',
+     hint:'are + made',
+     answers:['are made'],
+     cor:'These cars <strong>are made</strong> in Japan.',
+     exp:'These cars = plural → <strong>are</strong>. Make → made (past participle). are made.',
+     rule:'Plural subject → <strong>are</strong> + past participle'},
+    {type:'mc', tag:'tg-pas', lbl:'Passive', qtype:'Past Simple',
+     instr:'Choose the correct passive form (Past Simple):',
+     sent:'The Eiffel Tower _____ in 1889.',
+     sig:'Past Simple Passive',
+     opts:['was built','is built','has been built','built'],
+     ans:0,
+     cor:'The Eiffel Tower <strong>was built</strong> in 1889.',
+     exp:'Past Simple Passive: <strong>was/were + past participle</strong>. 1889 = specific past time.',
+     rule:'Past Simple Passive: <strong>was/were + past participle</strong>'},
+    {type:'write', tag:'tg-pas', lbl:'Passive', qtype:'Escribir',
+     instr:'Complete with the correct Past Simple passive:',
+     sent:'Three people _____ (injure) in the accident.',
+     sig:'Past Simple / plural',
+     hint:'were + injured',
+     answers:['were injured'],
+     cor:'Three people <strong>were injured</strong> in the accident.',
+     exp:'Three people = plural → <strong>were</strong>. Injure → injured. were injured.',
+     rule:'Plural past passive: <strong>were</strong> + past participle'},
+    {type:'mc', tag:'tg-err', lbl:'Error', qtype:'Error',
+     instr:'Find the INCORRECT passive sentence:',
+     sent:'Which one has an error?',
+     sig:'passive error',
+     opts:['The letter was written by Ana.','The windows are cleaned every week.','The food was cooked by my mother.','The report is write by the manager.'],
+     ans:3,
+     cor:'"The report <strong>is written</strong> by the manager."',
+     exp:'"Write" is the base form — passive needs the PAST PARTICIPLE. Write → written.',
+     rule:'Passive = be + <strong>past participle</strong> (not base verb)'},
+    {type:'write', tag:'tg-pas', lbl:'Passive', qtype:'Escribir',
+     instr:'Complete with the correct passive form:',
+     sent:'Spanish _____ (speak) in more than 20 countries.',
+     sig:'Present Simple / fact',
+     hint:'is + spoken',
+     answers:['is spoken'],
+     cor:'Spanish <strong>is spoken</strong> in more than 20 countries.',
+     exp:'Spanish = singular → is. Speak → spoken (irregular past participle). is spoken.',
+     rule:'<strong>is</strong> + spoken/written/known/seen (irregular participles)'},
+    {type:'mc', tag:'tg-pas', lbl:'Passive', qtype:'BY Agent',
+     instr:'Choose the sentence where "by" is NECESSARY:',
+     sent:'When should we use "by + agent" in passive voice?',
+     sig:'by + agent',
+     opts:["The car was stolen. (we don't know by whom)","Harry Potter was written by J.K. Rowling. (important information)","The window was broken. (we don't know who)","Mistakes were made. (general)"],
+     ans:1,
+     cor:'"Harry Potter <strong>was written by J.K. Rowling.</strong>" — the agent is important.',
+     exp:'Use <strong>by + agent</strong> only when the agent is IMPORTANT or KNOWN. Omit it when unknown or unimportant.',
+     rule:'<strong>by + agent</strong> = only when agent is important/relevant'},
+    {type:'write', tag:'tg-pas', lbl:'Passive', qtype:'Escribir',
+     instr:'Make this negative passive:',
+     sent:'The email _____ (not / send) yet.',
+     sig:'Present Perfect Passive / negative',
+     hint:"hasn't been sent",
+     answers:["hasn't been sent","has not been sent"],
+     cor:'The email <strong>hasn\'t been sent</strong> yet.',
+     exp:'Present Perfect Passive negative: <strong>haven\'t/hasn\'t + been + past participle</strong>.',
+     rule:'Perfect Passive: <strong>have/has been + past participle</strong>'},
+  ]
+},
+{
+  big:1, id:'pas-advanced', label:'Passive – Otros Tiempos', stab:'sp', color:'var(--pas)',
+  qs:[
+    {type:'mc', tag:'tg-pas', lbl:'Passive', qtype:'Present Perfect',
+     instr:'Choose the correct Present Perfect Passive:',
+     sent:'The bridge _____ recently.',
+     sig:'Present Perfect Passive',
+     opts:['has been repaired','was repaired','is repaired','is being repaired'],
+     ans:0,
+     cor:'The bridge <strong>has been repaired</strong> recently.',
+     exp:'Present Perfect Passive: <strong>have/has + been + past participle</strong>. "Recently" signals Present Perfect.',
+     rule:'Present Perfect Passive: <strong>has/have + been + past participle</strong>'},
+    {type:'write', tag:'tg-pas', lbl:'Passive', qtype:'Escribir',
+     instr:'Complete with Future Passive:',
+     sent:'The results _____ (announce) tomorrow.',
+     sig:'Future Passive / will',
+     hint:'will be + announced',
+     answers:['will be announced'],
+     cor:'The results <strong>will be announced</strong> tomorrow.',
+     exp:'Future Passive: <strong>will + be + past participle</strong>.',
+     rule:'Future Passive: <strong>will be + past participle</strong>'},
+    {type:'mc', tag:'tg-pas', lbl:'Passive', qtype:'Continuous',
+     instr:'Choose the correct Present Continuous Passive:',
+     sent:'A new hospital _____ in our city right now.',
+     sig:'right now / in progress',
+     opts:['is built','is being built','has been built','was being built'],
+     ans:1,
+     cor:'A new hospital <strong>is being built</strong> in our city.',
+     exp:'Present Continuous Passive: <strong>am/is/are + being + past participle</strong>.',
+     rule:'Present Continuous Passive: <strong>is/are being + past participle</strong>'},
+    {type:'write', tag:'tg-pas', lbl:'Passive', qtype:'Escribir',
+     instr:'Complete with the correct passive tense:',
+     sent:'By next year, the project _____ (complete).',
+     sig:'Future Perfect Passive',
+     hint:'will have been + completed',
+     answers:['will have been completed'],
+     cor:'The project <strong>will have been completed</strong> by next year.',
+     exp:'Future Perfect Passive: <strong>will have been + past participle</strong>.',
+     rule:'Future Perfect Passive: <strong>will have been + past participle</strong>'},
+    {type:'mc', tag:'tg-err', lbl:'Error', qtype:'Error',
+     instr:'Find the INCORRECT passive sentence:',
+     sent:'Which one has an error?',
+     sig:'passive tense error',
+     opts:['The car has been stolen.','The report is being written now.','The house was being built last year.','The letter will been sent tomorrow.'],
+     ans:3,
+     cor:'"The letter <strong>will be sent</strong> tomorrow."',
+     exp:'"Will been sent" is wrong. Future passive = <strong>will be</strong> + past participle (not "will been").',
+     rule:'Future Passive: <strong>will BE</strong> + participle — never "will been"'},
+    {type:'mc', tag:'tg-pas', lbl:'Passive', qtype:'Modal Passive',
+     instr:'Choose the correct modal passive:',
+     sent:'This problem _____ immediately.',
+     sig:'modal + passive',
+     opts:['must solve','must solved','must be solved','must been solved'],
+     ans:2,
+     cor:'This problem <strong>must be solved</strong> immediately.',
+     exp:'Modal + Passive: <strong>modal + be + past participle</strong>. Must/can/should + be + participle.',
+     rule:'Modal Passive: <strong>modal + be + past participle</strong> (must be solved · can be done)'},
+    {type:'write', tag:'tg-pas', lbl:'Passive', qtype:'Escribir',
+     instr:'Complete with modal passive:',
+     sent:'Phones _____ (not / use) during the exam.',
+     sig:'modal negative passive',
+     hint:"shouldn't be used / must not be used",
+     answers:["shouldn't be used","should not be used","must not be used","cannot be used","can't be used"],
+     cor:'Phones <strong>shouldn\'t be used</strong> during the exam.',
+     exp:'Modal Passive negative: <strong>modal + not + be + past participle</strong>.',
+     rule:'Modal Passive negative: <strong>modal + not + be + participle</strong>'},
+    {type:'mc', tag:'tg-by', lbl:'BY', qtype:'BY Agent',
+     instr:'Choose the best sentence (omit "by" when unnecessary):',
+     sent:'Someone broke the window. → Which passive is most natural?',
+     sig:'unknown agent → omit by',
+     opts:['The window was broken by someone.','The window was broken.','The window is broken by unknown.','Someone was broken the window.'],
+     ans:1,
+     cor:'"<strong>The window was broken.</strong>" — omit "by someone" (unknown/unimportant).',
+     exp:'When the agent is unknown, unimportant, or obvious → OMIT "by + agent".',
+     rule:'Omit <strong>by + agent</strong> when unknown/unimportant/obvious'},
+  ]
+},
+
+// ── TRANSFORM ────────────────────────────────────────
+{
+  big:2, id:'tr-act-to-pas', label:'Active → Passive', stab:'sx', color:'var(--purple)',
+  qs:[
+    {type:'write', tag:'tg-tr', lbl:'Transform', qtype:'Active → Passive',
+     instr:'Transform to Passive Voice (Present Simple):',
+     transform:{label:'ACTIVE', sent:'The company pays its employees every month.'},
+     sent:'Its employees _____ (pay) every month.',
+     sig:'Present Simple → is/are + paid',
+     hint:'are + paid',
+     answers:['are paid'],
+     cor:'Its employees <strong>are paid</strong> every month.',
+     exp:'Active: The company (S) pays (V) employees (O). Passive: Employees (S) + are paid (V). Object becomes subject.',
+     rule:'Object → Subject + <strong>are/is + past participle</strong>'},
+    {type:'write', tag:'tg-tr', lbl:'Transform', qtype:'Active → Passive',
+     instr:'Transform to Passive Voice (Past Simple):',
+     transform:{label:'ACTIVE', sent:'Leonardo da Vinci painted the Mona Lisa.'},
+     sent:'The Mona Lisa _____ (paint) by Leonardo da Vinci.',
+     sig:'Past Simple → was + painted',
+     hint:'was + painted',
+     answers:['was painted'],
+     cor:'The Mona Lisa <strong>was painted</strong> by Leonardo da Vinci.',
+     exp:'Active past → Passive past: Object (Mona Lisa) + was + painted + by + agent.',
+     rule:'Past Active → <strong>was/were + past participle + by + agent</strong>'},
+    {type:'mc', tag:'tg-tr', lbl:'Transform', qtype:'Active → Passive',
+     instr:'Choose the correct passive transformation:',
+     sent:'Active: "They will finish the project by Friday."',
+     sig:'Future → will be + finished',
+     opts:['The project will finish by Friday.','The project will be finished by Friday.','The project is finished by Friday.','The project will been finished by Friday.'],
+     ans:1,
+     cor:'"The project <strong>will be finished</strong> by Friday."',
+     exp:'Future Active → Future Passive: will + be + past participle.',
+     rule:'Future Active → <strong>will be + past participle</strong>'},
+    {type:'write', tag:'tg-tr', lbl:'Transform', qtype:'Active → Passive',
+     instr:'Transform to Passive (Present Perfect):',
+     transform:{label:'ACTIVE', sent:'Someone has stolen my wallet.'},
+     sent:'My wallet _____ (steal).',
+     sig:'Present Perfect → has been + stolen',
+     hint:'has been + stolen',
+     answers:['has been stolen'],
+     cor:'My wallet <strong>has been stolen</strong>.',
+     exp:'Present Perfect Active → Passive: have/has + been + past participle.',
+     rule:'Present Perfect Passive: <strong>has/have been + past participle</strong>'},
+    {type:'mc', tag:'tg-tr', lbl:'Transform', qtype:'Active → Passive',
+     instr:'Choose the correct passive transformation:',
+     sent:'Active: "Workers are building the road right now."',
+     sig:'Present Continuous → is/are being + built',
+     opts:['The road is built right now.','The road is being built right now.','The road was being built right now.','The road has been built right now.'],
+     ans:1,
+     cor:'"The road <strong>is being built</strong> right now."',
+     exp:'Present Continuous Active → Passive: am/is/are + being + past participle.',
+     rule:'Continuous Passive: <strong>is/are being + past participle</strong>'},
+    {type:'write', tag:'tg-tr', lbl:'Transform', qtype:'Active → Passive',
+     instr:'Transform to Passive (modal):',
+     transform:{label:'ACTIVE', sent:'You must submit the form before Friday.'},
+     sent:'The form _____ (submit) before Friday.',
+     sig:'modal → must be + submitted',
+     hint:'must be + submitted',
+     answers:['must be submitted'],
+     cor:'The form <strong>must be submitted</strong> before Friday.',
+     exp:'Modal Active → Passive: modal + be + past participle.',
+     rule:'Modal Active → <strong>modal + be + past participle</strong>'},
+    {type:'mc', tag:'tg-tr', lbl:'Transform', qtype:'Active → Passive',
+     instr:'Choose the correct passive for this sentence:',
+     sent:'Active: "Nobody has ever climbed that mountain."',
+     sig:'Present Perfect Passive',
+     opts:['That mountain has never climbed.','That mountain has never been climbed.','That mountain was never climbed.','That mountain never been climbed.'],
+     ans:1,
+     cor:'"That mountain <strong>has never been climbed</strong>."',
+     exp:'"Nobody" → omit agent in passive. Present Perfect Passive: has/have + been + past participle.',
+     rule:'Nobody/someone → omit agent · has been + participle'},
+    {type:'write', tag:'tg-tr', lbl:'Transform', qtype:'Active → Passive',
+     instr:'Transform completely (Past Continuous):',
+     transform:{label:'ACTIVE', sent:'The police were questioning the suspect when he escaped.'},
+     sent:'The suspect _____ (question) when he escaped.',
+     sig:'Past Continuous → was being + questioned',
+     hint:'was being + questioned',
+     answers:['was being questioned'],
+     cor:'The suspect <strong>was being questioned</strong> when he escaped.',
+     exp:'Past Continuous Passive: was/were + being + past participle.',
+     rule:'Past Continuous Passive: <strong>was/were being + past participle</strong>'},
+  ]
+},
+{
+  big:2, id:'tr-pas-to-act', label:'Passive → Active', stab:'sx', color:'var(--purple)',
+  qs:[
+    {type:'mc', tag:'tg-tr', lbl:'Transform', qtype:'Passive → Active',
+     instr:'Choose the correct active transformation:',
+     sent:'Passive: "The letter was written by Maria."',
+     sig:'Past Simple → Maria + wrote',
+     opts:['Maria writes the letter.','Maria is writing the letter.','Maria wrote the letter.','Maria has written the letter.'],
+     ans:2,
+     cor:'"<strong>Maria wrote the letter.</strong>"',
+     exp:'Passive Past Simple → Active Past Simple. Agent (by Maria) → Subject. was written → wrote.',
+     rule:'Passive → Active: by + agent becomes subject · reverse the verb form'},
+    {type:'write', tag:'tg-tr', lbl:'Transform', qtype:'Passive → Active',
+     instr:'Transform to Active Voice:',
+     transform:{label:'PASSIVE', sent:'The cake is baked by my grandmother every Sunday.'},
+     sent:'My grandmother _____ every Sunday.',
+     sig:'Present Simple Active',
+     hint:'bakes the cake',
+     answers:['bakes the cake'],
+     cor:'My grandmother <strong>bakes the cake</strong> every Sunday.',
+     exp:'Agent (by grandmother) → subject. is baked → bakes. Object (the cake) comes after verb.',
+     rule:'Passive → Active: Agent = Subject + Active Verb + Object'},
+    {type:'mc', tag:'tg-tr', lbl:'Transform', qtype:'Passive → Active',
+     instr:'Choose the correct active transformation:',
+     sent:'Passive: "The new policy will be announced by the CEO."',
+     sig:'Future Passive → Active',
+     opts:['The CEO announces the new policy.','The CEO is announcing the new policy.','The CEO will announce the new policy.','The CEO has announced the new policy.'],
+     ans:2,
+     cor:'"<strong>The CEO will announce the new policy.</strong>"',
+     exp:'Future Passive → Future Active. will be announced → will announce.',
+     rule:'Future Passive → Future Active: will be + participle → will + base verb'},
+    {type:'write', tag:'tg-tr', lbl:'Transform', qtype:'Passive → Active',
+     instr:'Transform to Active Voice:',
+     transform:{label:'PASSIVE', sent:'The award has been given to her by the president.'},
+     sent:'The president _____ to her.',
+     sig:'Present Perfect Active',
+     hint:'has given the award',
+     answers:['has given the award'],
+     cor:'The president <strong>has given the award</strong> to her.',
+     exp:'Present Perfect Passive → Active. has been given → has given. Agent becomes subject.',
+     rule:'Present Perfect: has been given → <strong>has given</strong>'},
+    {type:'mc', tag:'tg-err', lbl:'Error', qtype:'Error',
+     instr:'Find the incorrect transformation:',
+     sent:'"The book was read by students." Which active form is WRONG?',
+     sig:'transformation error',
+     opts:['Students read the book. ✓','Students did read the book. ✓ (emphatic)','Students are reading the book. ✗','Students have read the book. ✗'],
+     ans:2,
+     cor:'"Students <strong>read the book.</strong>" (Past Simple Active) is correct.',
+     exp:'"Was read" (Past Simple Passive) → "read" (Past Simple Active). Present Continuous would change the tense.',
+     rule:'Keep the same tense: past passive → past active'},
+  ]
+},
+
+// ── MIX ──────────────────────────────────────────────
+{
+  big:3, id:'mix-all', label:'Mix – Todo', stab:'sm', color:'#6d28d9',
+  qs:[
+    {type:'2btn', tag:'tg-id', lbl:'A/P', qtype:'Identificar',
+     instr:'Active or Passive?',
+     sent:'The new drug <span class="pas-w">has been tested</span> on thousands of patients.',
+     sig:'has been + tested',
+     ans:'passive',
+     cor:'✅ <strong>PASSIVE</strong> — Present Perfect Passive: has been tested.',
+     exp:'has been + past participle = Present Perfect Passive.',
+     rule:'<strong>PASSIVE</strong>: has/have been + past participle'},
+    {type:'mc', tag:'tg-pas', lbl:'Passive', qtype:'Completar',
+     instr:'Choose the correct passive form:',
+     sent:'The documents _____ before the meeting started.',
+     sig:'Past Perfect Passive',
+     opts:['had been prepared','have been prepared','were being prepared','was prepared'],
+     ans:0,
+     cor:'The documents <strong>had been prepared</strong> before the meeting.',
+     exp:'Past Perfect Passive: <strong>had + been + past participle</strong>. Action completed before another past action.',
+     rule:'Past Perfect Passive: <strong>had been + past participle</strong>'},
+    {type:'write', tag:'tg-tr', lbl:'Transform', qtype:'Active → Passive',
+     instr:'Transform to Passive (keep the same tense):',
+     transform:{label:'ACTIVE', sent:'The manager approved the budget last week.'},
+     sent:'The budget _____ by the manager last week.',
+     sig:'Past Simple passive',
+     hint:'was + approved',
+     answers:['was approved'],
+     cor:'The budget <strong>was approved</strong> by the manager last week.',
+     exp:'Past Simple Active → Passive: was/were + past participle.',
+     rule:'Past Simple Passive: <strong>was/were + past participle</strong>'},
+    {type:'mc', tag:'tg-err', lbl:'Error', qtype:'Error',
+     instr:'Find the sentence with an error:',
+     sent:'Which one is INCORRECT?',
+     sig:'mixed errors',
+     opts:['English is spoken worldwide.','The cake was baked by Ana.','The car is being repair.','The results have been announced.'],
+     ans:2,
+     cor:'"The car <strong>is being repaired</strong>."',
+     exp:'"Repair" must be the past participle: <strong>repaired</strong>. Passive always needs past participle.',
+     rule:'Passive = be + <strong>past participle</strong> — never base verb'},
+    {type:'mc', tag:'tg-pas', lbl:'Passive', qtype:'Completar',
+     instr:'Choose the correct passive form:',
+     sent:'The suspect _____ at the time of the crime.',
+     sig:'alibi / continuous past',
+     opts:['was seeing','was been seen','was being watched','were watching'],
+     ans:2,
+     cor:'The suspect <strong>was being watched</strong> at the time of the crime.',
+     exp:'Past Continuous Passive: <strong>was/were + being + past participle</strong>.',
+     rule:'Past Continuous Passive: <strong>was/were being + past participle</strong>'},
+    {type:'write', tag:'tg-pas', lbl:'Passive', qtype:'Escribir',
+     instr:'Complete with the correct passive form:',
+     sent:'All passengers _____ (ask) to show their ID at the gate.',
+     sig:'obligation / modal passive',
+     hint:'were asked / are asked',
+     answers:['were asked','are asked','will be asked'],
+     cor:'All passengers <strong>were asked</strong> to show their ID.',
+     exp:'Passive with infinitive: were asked + to + base verb. Common with: asked, told, invited, ordered.',
+     rule:'Passive + to-infinitive: were/are <strong>asked / told / invited</strong> to + base verb'},
+    {type:'2btn', tag:'tg-id', lbl:'A/P', qtype:'Identificar',
+     instr:'Active or Passive?',
+     sent:'Thousands of tourists <span class="act-w">visit</span> Costa Rica every year.',
+     sig:'subject performs the action',
+     ans:'active',
+     cor:'✅ <strong>ACTIVE</strong> — Tourists (subject) visit (verb) Costa Rica (object).',
+     exp:'Active: subject (tourists) performs the action (visit). Present Simple Active.',
+     rule:'<strong>ACTIVE</strong>: Subject + Verb + Object'},
+    {type:'mc', tag:'tg-tr', lbl:'Transform', qtype:'Active → Passive',
+     instr:'Which is the correct passive transformation?',
+     sent:'Active: "They should investigate the matter further."',
+     sig:'modal passive',
+     opts:['The matter should investigate further.','The matter should be investigated further.','The matter should been investigated further.','The matter is investigated further.'],
+     ans:1,
+     cor:'"The matter <strong>should be investigated</strong> further."',
+     exp:'Modal Passive: modal + be + past participle.',
+     rule:'Modal Passive: <strong>should/must/can + be + past participle</strong>'},
+    {type:'write', tag:'tg-tr', lbl:'Transform', qtype:'Passive → Active',
+     instr:'Transform to Active Voice:',
+     transform:{label:'PASSIVE', sent:'A decision will be made by the board tomorrow.'},
+     sent:'The board _____ tomorrow.',
+     sig:'Future Active',
+     hint:'will make a decision',
+     answers:['will make a decision'],
+     cor:'The board <strong>will make a decision</strong> tomorrow.',
+     exp:'Future Passive → Future Active. Agent (board) = subject. will be made → will make.',
+     rule:'Future Passive → Active: will be + participle → <strong>will + base verb</strong>'},
+    {type:'mc', tag:'tg-err', lbl:'Error', qtype:'Error',
+     instr:'Choose the CORRECT passive sentence:',
+     sent:'All options — which one is grammatically correct?',
+     sig:'final check',
+     opts:['The report written by the team.','The team has been wrote the report.','The report has been written by the team.','The report have been written by the team.'],
+     ans:2,
+     cor:'"<strong>The report has been written by the team.</strong>"',
+     exp:'Present Perfect Passive: has + been + past participle. "Report" is singular → HAS (not have).',
+     rule:'Singular → <strong>has been</strong> + participle · Plural → <strong>have been</strong> + participle'},
+  ]
+},
+];
+
+// ══════════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════════
+const BIG = [
+  {label:'Active',    activeClass:'ba', color:'var(--act)', ids:['act-intro']},
+  {label:'Passive',   activeClass:'bp', color:'var(--pas)', ids:['pas-present','pas-advanced']},
+  {label:'Transform', activeClass:'bx', color:'var(--purple)', ids:['tr-act-to-pas','tr-pas-to-act']},
+  {label:'MIX',       activeClass:'bm', color:'#6d28d9', ids:['mix-all']},
+];
+let bigIdx=0, curSub={}, pts=0;
+BIG.forEach((_,i)=>curSub[i]=0);
+let state={}; DATA.forEach(s=>{state[s.id]={};s.qs.forEach((_,qi)=>state[s.id][qi]={answered:false,correct:false});});
+
+function secsForBig(bi){return DATA.filter(d=>d.big===bi);}
+
+function switchBig(bi){
+  bigIdx=bi;
+  BIG.forEach((_,i)=>document.getElementById(`bt-${i}`).className=`bt${i===bi?' '+BIG[i].activeClass:''}`);
+  buildStabs(); renderCurrent(); window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function buildStabs(){
+  const el=document.getElementById('stabs'); el.innerHTML='';
+  secsForBig(bigIdx).forEach((sec,i)=>{
+    const btn=document.createElement('button');
+    btn.className=`st${i===curSub[bigIdx]?' '+sec.stab:''}`;
+    btn.textContent=sec.label;
+    btn.onclick=()=>{curSub[bigIdx]=i;buildStabs();renderCurrent();window.scrollTo({top:0,behavior:'smooth'});};
+    el.appendChild(btn);
+  });
+}
+
+function renderCurrent(){
+  const secs=secsForBig(bigIdx), sec=secs[curSub[bigIdx]]; if(!sec) return;
+  renderSec(sec);
+}
+
+// ── RENDER ───────────────────────────────────────────
+function renderSec(sec){
+  const s=state[sec.id], total=sec.qs.length;
+  const answered=Object.values(s).filter(x=>x.answered).length;
+  const correct=Object.values(s).filter(x=>x.correct).length;
+
+  const pf=document.getElementById('pf');
+  pf.style.width=(answered/total*100)+'%'; pf.style.background=sec.color;
+
+  const cont=document.getElementById('sections'); cont.innerHTML='';
+  const wrap=document.createElement('div'); wrap.className='wrap';
+
+  // concept card
+  const con=document.createElement('div'); con.className='concept';
+  con.innerHTML=`
+    <div class="concept-title">📖 Reference · Active vs Passive Voice</div>
+    <div class="concept-grid">
+      <div class="cbox cbox-act">
+        <div class="cbox-label">🟦 Active Voice</div>
+        <div class="cbox-formula">Subject + Verb + Object</div>
+        <div class="cbox-ex">
+          <span>✦ Subject PERFORMS the action</span>
+          <span>✦ More direct and natural</span>
+          <span style="opacity:.7;margin-top:4px">The chef <strong>cooks</strong> the meal.</span>
+          <span style="opacity:.7">Maria <strong>wrote</strong> the report.</span>
+        </div>
+      </div>
+      <div class="cbox cbox-pas">
+        <div class="cbox-label">🟥 Passive Voice</div>
+        <div class="cbox-formula">Subject + be + past participle</div>
+        <div class="cbox-ex">
+          <span>✦ Subject RECEIVES the action</span>
+          <span>✦ Agent unknown/unimportant</span>
+          <span style="opacity:.7;margin-top:4px">The meal <strong>is cooked</strong> by the chef.</span>
+          <span style="opacity:.7">The report <strong>was written</strong> by Maria.</span>
+        </div>
+      </div>
+    </div>`;
+  wrap.appendChild(con);
+
+  // tense table
+  const tt=document.createElement('div'); tt.className='tense-table';
+  tt.innerHTML=`
+    <table>
+      <thead><tr><th>Tense</th><th>Active</th><th>Passive</th></tr></thead>
+      <tbody>
+        <tr><td class="t-name">Present Simple</td><td class="t-act">He writes it.</td><td class="t-pas">It is written.</td></tr>
+        <tr><td class="t-name">Past Simple</td><td class="t-act">He wrote it.</td><td class="t-pas">It was written.</td></tr>
+        <tr><td class="t-name">Future (will)</td><td class="t-act">He will write it.</td><td class="t-pas">It will be written.</td></tr>
+        <tr><td class="t-name">Present Perfect</td><td class="t-act">He has written it.</td><td class="t-pas">It has been written.</td></tr>
+        <tr><td class="t-name">Present Continuous</td><td class="t-act">He is writing it.</td><td class="t-pas">It is being written.</td></tr>
+        <tr><td class="t-name">Past Continuous</td><td class="t-act">He was writing it.</td><td class="t-pas">It was being written.</td></tr>
+        <tr><td class="t-name">Modal</td><td class="t-act">He must write it.</td><td class="t-pas">It must be written.</td></tr>
+      </tbody>
+    </table>`;
+  wrap.appendChild(tt);
+
+  // stats
+  const stats=document.createElement('div'); stats.className='stats';
+  stats.innerHTML=`
+    <div class="stat"><div class="sv" style="color:var(--green)">${correct}</div><div class="sl">✅ Correctas</div></div>
+    <div class="stat"><div class="sv" style="color:var(--red)">${answered-correct}</div><div class="sl">❌ Incorrectas</div></div>
+    <div class="stat"><div class="sv" style="color:var(--gold)">${total-answered}</div><div class="sl">🃏 Quedan</div></div>`;
+  wrap.appendChild(stats);
+
+  // done
+  const done=document.createElement('div');
+  done.className='done'+(answered===total?' show':'');
+  done.id=`done-${sec.id}`;
+  if(answered===total) fillDone(done,correct,total,sec);
+  wrap.appendChild(done);
+
+  sec.qs.forEach((q,qi)=>wrap.appendChild(buildCard(q,qi,sec)));
+  cont.appendChild(wrap);
+}
+
+// ── BUILD CARD ───────────────────────────────────────
+function buildCard(q,qi,sec){
+  const s=state[sec.id][qi];
+  const card=document.createElement('div');
+  card.className=`qcard${s.answered?(s.correct?' ok':' fail'):''}`;
+  card.id=`qc-${sec.id}-${qi}`;
+
+  const sentHTML=q.sent.includes('_____')
+    ?q.sent.replace(/_{3,}/g,'<span class="gap">_____</span>')
+    :q.sent;
+
+  const top=document.createElement('div'); top.className='qcard-top';
+  top.innerHTML=`
+    <div class="qmeta">
+      <div class="qnum" id="qn-${sec.id}-${qi}">${s.answered?(s.correct?'✓':'✗'):(qi+1)}</div>
+      <span class="qtag ${q.tag}">${q.lbl}</span>
+      <span class="qlbl">${q.qtype}</span>
+    </div>
+    <div class="qinstr">${q.instr}</div>
+    ${q.transform?`<div class="transform-box"><div class="tb-label">🔵 ${q.transform.label}</div><div class="tb-sent">${q.transform.sent}</div></div><div style="text-align:center;font-size:1.2rem;margin:6px 0;color:var(--purple)">↓</div>`:''}
+    <div class="qsent">${sentHTML}${q.sig?`<br><span class="sig">🔑 ${q.sig}</span>`:''}</div>
+    ${q.hint?`<div style="margin-top:5px;font-size:.67rem;color:var(--muted);font-family:'DM Mono',monospace">💡 ${q.hint}</div>`:''}`;
+  card.appendChild(top);
+
+  if(q.type==='2btn'){
+    const row=document.createElement('div'); row.className='two-btns';
+    [{v:'active',cls:'act-h',lbl:'Subject performs'},{v:'passive',cls:'pas-h',lbl:'Subject receives'}].forEach(btn=>{
+      const el=document.createElement('div');
+      el.className=`voice-btn ${btn.cls}${s.answered?' dis':''}`;
+      if(s.answered){if(btn.v===q.ans)el.className+=' ok';else if(btn.v===s.chosen&&btn.v!==q.ans)el.className+=' bad';}
+      el.innerHTML=`${btn.v.toUpperCase()}<span class="vb-sub">${btn.lbl}</span>`;
+      if(!s.answered) el.onclick=()=>pick2(sec,qi,btn.v);
+      row.appendChild(el);
+    });
+    card.appendChild(row);
+  } else if(q.type==='mc'){
+    const wrap=document.createElement('div'); wrap.className='opts';
+    const letters=['A','B','C','D'];
+    q.opts.forEach((opt,oi)=>{
+      const div=document.createElement('div');
+      div.id=`opt-${sec.id}-${qi}-${oi}`;
+      let cls='opt';
+      if(s.answered){cls+=' dis';if(oi===q.ans)cls+=' ok';else if(oi===s.chosen&&oi!==q.ans)cls+=' bad';}
+      div.className=cls;
+      div.innerHTML=`<span class="ol">${letters[oi]}</span>${opt}`;
+      if(!s.answered) div.onclick=()=>pickMC(sec,qi,oi);
+      wrap.appendChild(div);
+    });
+    card.appendChild(wrap);
+  } else {
+    const wrap=document.createElement('div'); wrap.className='write-area';
+    wrap.innerHTML=`
+      <div class="wr">
+        <input class="wi" id="wi-${sec.id}-${qi}" placeholder="Type the passive form..."
+          ${s.answered?'disabled':''}
+          onkeydown="if(event.key==='Enter')checkWrite('${sec.id}',${qi})">
+        <button class="chk" id="wb-${sec.id}-${qi}" onclick="checkWrite('${sec.id}',${qi})" ${s.answered?'disabled':''}>Check ✓</button>
+      </div>`;
+    card.appendChild(wrap);
+    if(s.answered&&s.saved){setTimeout(()=>{const wi=document.getElementById(`wi-${sec.id}-${qi}`);if(wi){wi.value=s.saved;wi.className='wi '+(s.correct?'ok':'fail');}},0);}
+  }
+
+  const fb=document.createElement('div');
+  fb.id=`fb-${sec.id}-${qi}`;
+  fb.className=`fb${s.answered?' show '+(s.correct?'ok':'fail'):''}`;
+  if(s.answered){fb.innerHTML=`${s.correct?'✅ <strong>Correct!</strong>':'❌ <strong>Incorrect.</strong>'} ${q.exp}<div class="cor">✓ ${q.cor}</div><div class="rn"><strong>📐 Rule:</strong> ${q.rule}</div>`;}
+  card.appendChild(fb);
+  return card;
+}
+
+// ── INTERACTIONS ─────────────────────────────────────
+function pick2(sec,qi,val){
+  if(state[sec.id][qi].answered) return;
+  const q=sec.qs[qi]; const correct=val===q.ans;
+  state[sec.id][qi]={answered:true,correct,chosen:val};
+  applyResult(sec,qi,correct,q);
+}
+
+function pickMC(sec,qi,oi){
+  if(state[sec.id][qi].answered) return;
+  const q=sec.qs[qi]; const correct=oi===q.ans;
+  state[sec.id][qi]={answered:true,correct,chosen:oi};
+  q.opts.forEach((_,i)=>{const el=document.getElementById(`opt-${sec.id}-${qi}-${i}`);if(!el)return;el.classList.add('dis');el.onclick=null;if(i===q.ans)el.classList.add('ok');else if(i===oi&&!correct)el.classList.add('bad');});
+  applyResult(sec,qi,correct,q);
+}
+
+function checkWrite(secId,qi){
+  const sec=DATA.find(d=>d.id===secId);
+  if(!sec||state[secId][qi].answered) return;
+  const q=sec.qs[qi];
+  const inp=document.getElementById(`wi-${secId}-${qi}`);
+  const btn=document.getElementById(`wb-${secId}-${qi}`);
+  if(!inp) return;
+  const val=inp.value.trim().toLowerCase().replace(/\s+/g,' ');
+  const correct=q.answers.some(a=>val===a.toLowerCase().trim()||val.includes(a.toLowerCase().trim()));
+  state[secId][qi]={answered:true,correct,saved:inp.value};
+  inp.disabled=true; if(btn) btn.disabled=true;
+  inp.className='wi '+(correct?'ok':'fail');
+  applyResult(sec,qi,correct,q);
+}
+
+function applyResult(sec,qi,correct,q){
+  const card=document.getElementById(`qc-${sec.id}-${qi}`);
+  const num=document.getElementById(`qn-${sec.id}-${qi}`);
+  const fb=document.getElementById(`fb-${sec.id}-${qi}`);
+  if(card) card.classList.add(correct?'ok':'fail');
+  if(num)  num.textContent=correct?'✓':'✗';
+  if(fb){fb.innerHTML=`${correct?'✅ <strong>Correct!</strong>':'❌ <strong>Incorrect.</strong>'} ${q.exp}<div class="cor">✓ ${q.cor}</div><div class="rn"><strong>📐 Rule:</strong> ${q.rule}</div>`;fb.className=`fb show ${correct?'ok':'fail'}`;}
+  if(correct){pts+=10;document.getElementById('g-pts').textContent=pts;}
+
+  const s=state[sec.id], total=sec.qs.length;
+  const answered=Object.values(s).filter(x=>x.answered).length;
+  const corr=Object.values(s).filter(x=>x.correct).length;
+  const sv=document.querySelectorAll('.sv');
+  if(sv[0])sv[0].textContent=corr; if(sv[1])sv[1].textContent=answered-corr; if(sv[2])sv[2].textContent=total-answered;
+  const pf=document.getElementById('pf'); if(pf)pf.style.width=(answered/total*100)+'%';
+
+  if(answered===total) setTimeout(()=>{
+    const done=document.getElementById(`done-${sec.id}`);
+    if(done){fillDone(done,corr,total,sec);done.classList.add('show');done.scrollIntoView({behavior:'smooth',block:'center'});}
+  },500);
+}
+
+function fillDone(el,correct,total,sec){
+  const pct=Math.round(correct/total*100);
+  const secs=secsForBig(bigIdx), idx=secs.indexOf(sec), next=secs[(idx+1)%secs.length];
+  el.innerHTML=`
+    <div class="done-emoji">${pct>=90?'🏆':pct>=70?'🎉':pct>=50?'📖':'💪'}</div>
+    <div class="done-score" style="color:${sec.color}">${correct}/${total}</div>
+    <div class="done-lbl">correctas en ${sec.label}</div>
+    <div class="done-grade">${pct>=90?'🔥 Excellent! You master this!':pct>=70?'👍 Great work!':pct>=50?'📖 Good — review the rules.':'💪 Keep practicing!'}</div>
+    <div class="done-chips">
+      <div class="dc dc-ok">✅ ${correct}</div>
+      <div class="dc dc-fail">❌ ${total-correct}</div>
+      <div class="dc dc-pts">⭐ +${correct*10} pts</div>
+    </div>
+    <div class="done-btns">
+      <button class="db db-p" onclick="restart('${sec.id}')">↺ Repetir</button>
+      <button class="db db-s" onclick="jumpTo('${next.id}')">→ ${next.label}</button>
+    </div>`;
+}
+
+function restart(secId){
+  const sec=DATA.find(d=>d.id===secId);
+  Object.values(state[secId]).forEach(s=>{if(s.correct)pts-=10;});
+  pts=Math.max(0,pts); document.getElementById('g-pts').textContent=pts;
+  state[secId]={}; sec.qs.forEach((_,qi)=>state[secId][qi]={answered:false,correct:false});
+  renderCurrent(); window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function jumpTo(secId){
+  const sec=DATA.find(d=>d.id===secId), secs=secsForBig(sec.big);
+  bigIdx=sec.big; curSub[bigIdx]=secs.indexOf(sec);
+  BIG.forEach((_,i)=>document.getElementById(`bt-${i}`).className=`bt${i===bigIdx?' '+BIG[i].activeClass:''}`);
+  buildStabs(); renderCurrent(); window.scrollTo({top:0,behavior:'smooth'});
+}
+
+buildStabs(); renderCurrent();
+</script>
+
+</body>
+</html>
